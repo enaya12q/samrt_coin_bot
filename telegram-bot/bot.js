@@ -2,7 +2,7 @@ require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 
 // استخدام التوكن من المتغيرات البيئية أو مباشرة
-const token = process.env.TELEGRAM_BOT_TOKEN || '7808906118:AAGw3YsXONFdYk8t1hlvCgnCm-8alIGpFtk';
+const token = process.env.TELEGRAM_BOT_TOKEN || '8021609729:AAHcx4JJRZLTDZuDvtuHD0wT2TmkIt3-enM';
 
 // إنشاء كائن البوت
 const bot = new TelegramBot(token, { polling: true });
