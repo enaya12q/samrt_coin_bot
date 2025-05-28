@@ -1,4 +1,5 @@
-'use client'
+'use client';
+
 import { useEffect, useState } from 'react';
 import { FaCoins, FaRocket, FaUsers, FaChartLine } from 'react-icons/fa';
 import Image from 'next/image';
@@ -6,7 +7,7 @@ import Link from 'next/link';
 import BottomNavigation from '@/components/layout/BottomNavigation';
 
 export default function HomePage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // null عند التحميل الأول
   const [stats, setStats] = useState({
     balance: 0,
     dailyMining: 15,
@@ -14,15 +15,14 @@ export default function HomePage() {
     totalEarned: 0
   });
 
-  // محاكاة التحقق من تسجيل الدخول
   useEffect(() => {
-    // في التطبيق الحقيقي، سيتم التحقق من حالة تسجيل الدخول من الخادم
-    const checkLoginStatus = () => {
-      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-      setIsLoggedIn(isLoggedIn);
-      
-      if (isLoggedIn) {
-        // محاكاة جلب بيانات المستخدم
+    if (typeof window !== 'undefined') {
+      const storedStatus = localStorage.getItem('isLoggedIn');
+      const loggedIn = storedStatus === 'true';
+      setIsLoggedIn(loggedIn);
+
+      if (loggedIn) {
+        // بيانات افتراضية للمستخدم
         setStats({
           balance: 250,
           dailyMining: 15,
@@ -30,10 +30,16 @@ export default function HomePage() {
           totalEarned: 450
         });
       }
-    };
-    
-    checkLoginStatus();
+    }
   }, []);
+
+  if (isLoggedIn === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-400">جارٍ التحميل...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pb-20">
@@ -51,9 +57,8 @@ export default function HomePage() {
       </header>
 
       {isLoggedIn ? (
-        // واجهة المستخدم المسجل
         <div className="p-4 space-y-6">
-          {/* بطاقة الرصيد */}
+          {/* رصيد المستخدم */}
           <div className="card bg-gradient-to-r from-primary-gold/20 to-primary-gold/5 border border-primary-gold/30">
             <div className="flex justify-between items-center">
               <div>
@@ -69,7 +74,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* بطاقة التعدين اليومي */}
+          {/* التعدين اليومي */}
           <div className="card">
             <h2 className="text-lg font-bold mb-4">التعدين اليومي</h2>
             <div className="flex justify-between items-center">
@@ -80,32 +85,28 @@ export default function HomePage() {
                   {stats.dailyMining} / يوم
                 </p>
               </div>
-              <Link href="/store" className="secondary-button">
+              <Link href="/store" className="secondary-button flex items-center">
                 <FaRocket className="mr-2" />
                 تعزيز التعدين
               </Link>
             </div>
           </div>
 
-          {/* إحصائيات سريعة */}
+          {/* الإحصائيات */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="card">
-              <div className="flex flex-col items-center">
-                <FaUsers className="text-primary-gold text-2xl mb-2" />
-                <p className="text-gray-400">الإحالات</p>
-                <p className="text-xl font-bold gold-text">{stats.referrals}</p>
-              </div>
+            <div className="card flex flex-col items-center">
+              <FaUsers className="text-primary-gold text-2xl mb-2" />
+              <p className="text-gray-400">الإحالات</p>
+              <p className="text-xl font-bold gold-text">{stats.referrals}</p>
             </div>
-            <div className="card">
-              <div className="flex flex-col items-center">
-                <FaChartLine className="text-primary-gold text-2xl mb-2" />
-                <p className="text-gray-400">إجمالي المكتسبات</p>
-                <p className="text-xl font-bold gold-text">{stats.totalEarned}</p>
-              </div>
+            <div className="card flex flex-col items-center">
+              <FaChartLine className="text-primary-gold text-2xl mb-2" />
+              <p className="text-gray-400">إجمالي المكتسبات</p>
+              <p className="text-xl font-bold gold-text">{stats.totalEarned}</p>
             </div>
           </div>
 
-          {/* أحدث الأخبار */}
+          {/* الأخبار */}
           <div className="card">
             <h2 className="text-lg font-bold mb-4">أحدث الأخبار</h2>
             <div className="space-y-4">
@@ -123,7 +124,6 @@ export default function HomePage() {
           </div>
         </div>
       ) : (
-        // واجهة الزائر
         <div className="p-4 space-y-6">
           <div className="card text-center">
             <h2 className="text-xl font-bold mb-4">مرحباً بك في منصة Smart Coin</h2>
@@ -147,33 +147,33 @@ export default function HomePage() {
           <div className="card">
             <h2 className="text-lg font-bold mb-4 text-center">مميزات المنصة</h2>
             <div className="space-y-4">
-              <div className="flex items-start">
-                <div className="bg-primary-gold/20 p-2 rounded-full ml-3">
-                  <FaCoins className="text-primary-gold" />
+              {[
+                {
+                  icon: <FaCoins className="text-primary-gold" />,
+                  title: 'تعدين يومي',
+                  desc: 'احصل على 15 عملة يومياً مجاناً',
+                },
+                {
+                  icon: <FaUsers className="text-primary-gold" />,
+                  title: 'برنامج الإحالة',
+                  desc: 'اكسب عملات إضافية عند دعوة أصدقائك',
+                },
+                {
+                  icon: <FaRocket className="text-primary-gold" />,
+                  title: 'معززات التعدين',
+                  desc: 'اشترِ معززات لزيادة معدل التعدين اليومي',
+                },
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-start">
+                  <div className="bg-primary-gold/20 p-2 rounded-full ml-3">
+                    {item.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-medium">{item.title}</h3>
+                    <p className="text-sm text-gray-400">{item.desc}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-medium">تعدين يومي</h3>
-                  <p className="text-sm text-gray-400">احصل على 15 عملة يومياً مجاناً</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <div className="bg-primary-gold/20 p-2 rounded-full ml-3">
-                  <FaUsers className="text-primary-gold" />
-                </div>
-                <div>
-                  <h3 className="font-medium">برنامج الإحالة</h3>
-                  <p className="text-sm text-gray-400">اكسب عملات إضافية عند دعوة أصدقائك</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <div className="bg-primary-gold/20 p-2 rounded-full ml-3">
-                  <FaRocket className="text-primary-gold" />
-                </div>
-                <div>
-                  <h3 className="font-medium">معززات التعدين</h3>
-                  <p className="text-sm text-gray-400">اشترِ معززات لزيادة معدل التعدين اليومي</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
