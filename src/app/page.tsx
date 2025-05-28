@@ -5,7 +5,7 @@ import { FaCoins, FaRocket, FaUsers, FaChartLine } from 'react-icons/fa';
 import Image from 'next/image';
 import Link from 'next/link';
 import BottomNavigation from '@/components/layout/BottomNavigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // null عند التحميل الأول
   const [stats, setStats] = useState({
